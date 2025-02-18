@@ -4,7 +4,7 @@ from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 from datetime import datetime, timedelta
 
 # Укажите токен вашего Telegram-бота
-API_TOKEN = '8013151776:AAHTirBN0gfOCORxQPzU7kqqlTCKJ4_2IPM'
+API_TOKEN = ''
 
 DB_CONFIG = {
     "dbname": "postgres",
