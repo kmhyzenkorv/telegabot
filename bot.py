@@ -3,7 +3,6 @@ import psycopg2
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 from datetime import datetime, timedelta
 
-# Укажите токен вашего Telegram-бота
 API_TOKEN = ''
 
 DB_CONFIG = {
@@ -34,12 +33,12 @@ def get_full_schedule_for_day(day, week_type):
     try:
         connection = psycopg2.connect(**DB_CONFIG)
         cursor = connection.cursor()
-        print(f"Запрос: {day}, {week_type}")  # Логируем запрос
+        print(f"Запрос: {day}, {week_type}")
         cursor.execute(query, (day, week_type))
         rows = cursor.fetchall()
         cursor.close()
         connection.close()
-        print(f"Результаты: {rows}")  # Лог результатов
+        print(f"Результаты: {rows}")
         return rows
     except psycopg2.Error as e:
         print(f"Ошибка подключения к базе данных или выполнения запроса:\n{e}")
@@ -56,7 +55,6 @@ def get_schedule_for_week(week_offset):
 
     full_schedule = []
     for i in range(6):
-        # Определяем день
         single_day = start_date + timedelta(days=i)
         day = single_day.strftime("%A").lower()
         day_ru = {
@@ -68,7 +66,6 @@ def get_schedule_for_week(week_offset):
             "saturday": "суббота",
         }.get(day)
 
-        # Получаем расписание для дня
         schedule = get_full_schedule_for_day(day_ru, week_type)
         full_schedule.append(f"Расписание на {day_ru.capitalize()}:\n")
 
@@ -101,17 +98,17 @@ def send_schedule(message):
     if not full_schedule:
         bot.send_message(message.chat.id, f"🚫 Расписание на {day.capitalize()} отсутствует.")
     else:
-        result = f"📅 **Расписание на {day.capitalize()}**:\n\n"  # Заголовок с выделением
+        result = f"📅 **Расписание на {day.capitalize()}**:\n\n"
 
         for row in full_schedule:
             time, room, subject, teacher = row
             result += (
-                f"*********************************\n"  # Разделительная линия
+                f"*********************************\n"
                 f"⏰ Время: {time}\n"
                 f"📚 Предмет: {subject}\n"
                 f"👨‍🏫 Преподаватель: {teacher or 'Не указан'}\n"
                 f"🚪 Аудитория: {room}\n"
-                f"*********************************\n\n"  # Разделительная линия
+                f"*********************************\n\n"
             )
 
         bot.send_message(message.chat.id, result)
@@ -129,9 +126,8 @@ def send_next_week_schedule(message):
 @bot.message_handler(commands=['week'])
 def check_week_type(message):
     current_date = datetime.now()
-    current_weekday = current_date.weekday()  # Получаем номер дня недели (0 = понедельник, 6 = воскресенье)
+    current_weekday = current_date.weekday()
 
-    # Определяем тип недели (замените логику на вашу актуальную)
     week_type = 'Верхняя' if (current_weekday // 7) % 2 == 0 else 'Нижняя'
 
     bot.send_message(message.chat.id, f"🔍 Сегодня {current_date.strftime('%Y-%m-%d')} и это {week_type} неделя.")
@@ -149,7 +145,6 @@ def send_help(message):
     )
     bot.send_message(message.chat.id, help_text)
 
-# Запуск Telegram-бота
 if __name__ == "__main__":
     print("Telegram-бот запущен!")
     bot.polling(none_stop=True)
